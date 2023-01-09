@@ -27,6 +27,7 @@
                             <li> <span class="bold">Seguindo:</span> <span>{{ dataUser.seguindo }}</span></li>
                         </ul>
                     </div>
+
                 </div>
             </div>
         </div>
@@ -36,7 +37,7 @@
 <script>
 
 export default{
-    
+
     data(){
         return{
             nameUser:'',
@@ -64,8 +65,8 @@ export default{
                     console.log('message:',data.message);
                     const resultado = document.querySelector('.data-user');
                     resultado.innerHTML = `<h3>User ${data.message}!</h3>`
-                    return;
-                } else{
+    
+                } else {
                 console.log(data)
                
                 this.dataUser.login = data.login;
@@ -141,4 +142,5 @@ li{
     color: black;
     font-weight: bold;
 }
+
 </style>
