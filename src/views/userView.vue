@@ -7,7 +7,7 @@
                 <input type="text" placeholder="nome de usuário" v-model="nameUser" @keypress.enter="getData">
                 <button @click="getData">Pesquisar</button>
                 </div>
-
+    
                 <div class="data-user">
                     <div class="image-user">
                         <img v-bind:src="dataUser.avatarUrl" alt="user-image">
@@ -40,6 +40,8 @@ export default{
     data(){
         return{
             nameUser:'',
+            apiUrl:'https://api.github.com/users/',
+            urlMounted:'',
             dataUser:{
                 login:'',
                 localizacao:'',
@@ -47,18 +49,23 @@ export default{
                 seguidores:'',
                 seguido:'',
                 avatarUrl:''
-            }
+            },
         }
     },
 
     methods:{
-        
         getData(){
-         fetch('https://api.github.com/users/lopesjorge')
+         fetch(this.apiUrl+this.nameUser)
             .then((response)=>{
                 return response.json()
             }).then((data)=>{
                 
+                if(data.message === 'Not Found'){
+                    console.log('message:',data.message);
+                    const resultado = document.querySelector('.data-user');
+                    resultado.innerHTML = `<h3>User ${data.message}!</h3>`
+                    return;
+                } else{
                 console.log(data)
                
                 this.dataUser.login = data.login;
@@ -77,16 +84,10 @@ export default{
                 console.log('Seguidores: ',this.dataUser.seguidores);
                 console.log('Seguindo: ',this.dataUser.seguindo);
                 console.log('---------------------------------');
-               
+                }
             })             
             console.log('dataUser',this.dataUser.login);
         }
- },
-
- computed:{
-      fullName(){
-       return `${this.urlgit}${this.nameUser}`     
-      }
     }
 }
 </script>
