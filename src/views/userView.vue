@@ -106,11 +106,6 @@ components: {
         closeButton(){
         this.showError = false;
         console.log('caiu no close pai');
-    },
-
-    cleanInput(){
-        console.log('caiu no clean');
-        this.nameUser = '';
     }
  }
 
