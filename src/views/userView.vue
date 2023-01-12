@@ -4,9 +4,14 @@
             <div class="card">
                 <div class="input-user">
                 <h1>Digite seu user Github</h1>
-                <input type="text" placeholder="nome de usuário" v-model="nameUser" @keypress.enter="getData">
-                <button @click="getData" class="btn-submit">Pesquisar</button>
+                <input type="text" placeholder="nome de usuário" v-model="nameUser" @keypress.enter="hiddenLoading(),getData()">
+                <button @click="hiddenLoading(),getData()" class="btn-submit">Pesquisar</button>
                 </div> 
+
+                <PageLoading
+                :showLoading="showLoading"
+                >
+                </PageLoading>
 
                 <UserComplete 
                 :nameUser="dataUser.login"
@@ -17,7 +22,8 @@
                 :userAvatarUrl="dataUser.avatarUrl"
                 :showUser="showUser"
                 >
-                </UserComplete>    
+                </UserComplete>  
+                
             </div>
         </div>
     </div>
@@ -28,20 +34,20 @@
     :message="messageError" >
     </UserNotFound>
 
-   
-
 </template>
 
 <script>
 import UserComplete from '@/components/UserComplete.vue'
 import UserNotFound from '@/components/UserNotFound.vue'
+import PageLoading from '@/components/PageLoading.vue'
 
 export default{
 name: 'HomeView',
 
 components: {
     UserComplete,
-    UserNotFound
+    UserNotFound,
+    PageLoading
 },
     data(){
         return{
@@ -50,6 +56,7 @@ components: {
             messageError:'',
             showUser:false,
             showError:false,
+            showLoading:false,
             dataUser:{
                 login:'',
                 localizacao:'',
@@ -72,12 +79,13 @@ components: {
                     this.messageError = `User ${data.message}`;
                     this.showError = true;
                     this.showUser = false;
+                    this.showLoading = false;
 
                     console.log('message:',data.message);
                     console.log('message:',data.message);
                     
                 } else {
-              
+ 
                 this.dataUser = data;
                 this.showUser = true;
                 this.showError = false;
@@ -98,7 +106,9 @@ components: {
                 console.log('Seguidores: ',this.dataUser.seguidores);
                 console.log('Seguindo: ',this.dataUser.seguindo);
                 console.log('---------------------------------');
-            
+
+                this.showLoading = false;
+
                 }
             })             
         },
@@ -106,7 +116,11 @@ components: {
         closeButton(){
         this.showError = false;
         console.log('caiu no close pai');
-    }
+        },
+
+        hiddenLoading(){
+            this.showLoading = true;
+        }
  }
 
    
