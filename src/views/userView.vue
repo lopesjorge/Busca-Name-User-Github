@@ -5,44 +5,51 @@
                 <div class="input-user">
                 <h1>Digite seu user Github</h1>
                 <input type="text" placeholder="nome de usuário" v-model="nameUser" @keypress.enter="getData">
-                <button @click="getData">Pesquisar</button>
-                </div>
-    
-                <div class="data-user">
-                    <div class="image-user">
-                        <img v-bind:src="dataUser.avatarUrl" alt="user-image">
-                    </div>
+                <button @click="getData" class="btn-submit">Pesquisar</button>
+                </div> 
 
-                    <div>
-                        <ul>
-                            <li> <span class="bold">Nome:</span> <span>{{ dataUser.login }}</span></li>
-                            <li> <span class="bold">Localização:</span> <span>{{ dataUser.localizacao }}</span> </li>
-                            <li>
-                               <span class="bold"> Biografia:</span>
-                                <p>
-                                   {{ dataUser.biografia }}
-                                </p>    
-                            </li>
-                            <li> <span class="bold">Seguidores:</span> <span>{{ dataUser.seguidores }}</span></li>
-                            <li> <span class="bold">Seguindo:</span> <span>{{ dataUser.seguindo }}</span></li>
-                        </ul>
-                    </div>
-
-                </div>
+                <UserComplete 
+                :nameUser="dataUser.login"
+                :userLocation="dataUser.localizacao"
+                :userBio="dataUser.biografia"
+                :userFollowers="dataUser.seguindo"
+                :userFollowing="dataUser.seguidores"
+                :userAvatarUrl="dataUser.avatarUrl"
+                :showUser="showUser"
+                >
+                </UserComplete>    
             </div>
         </div>
     </div>
+
+    <UserNotFound
+    @close="closeButton()"
+    :showError="showError"
+    :message="messageError" >
+    </UserNotFound>
+
+   
+
 </template>
 
 <script>
+import UserComplete from '@/components/UserComplete.vue'
+import UserNotFound from '@/components/UserNotFound.vue'
 
 export default{
+name: 'HomeView',
 
+components: {
+    UserComplete,
+    UserNotFound
+},
     data(){
         return{
             nameUser:'',
             apiUrl:'https://api.github.com/users/',
-            urlMounted:'',
+            messageError:'',
+            showUser:false,
+            showError:false,
             dataUser:{
                 login:'',
                 localizacao:'',
@@ -62,19 +69,25 @@ export default{
             }).then((data)=>{
                 
                 if(data.message === 'Not Found'){
+                    this.messageError = `User ${data.message}`;
+                    this.showError = true;
+                    this.showUser = false;
+
                     console.log('message:',data.message);
-                    const resultado = document.querySelector('.data-user');
-                    resultado.innerHTML = `<h3>User ${data.message}!</h3>`
-    
+                    console.log('message:',data.message);
+                    
                 } else {
-                console.log(data)
-               
-                this.dataUser.login = data.login;
-                this.dataUser.localizacao = data.location;
-                this.dataUser.biografia = data.bio;
-                this.dataUser.seguidores = data.followers;
-                this.dataUser.seguindo = data.following;
-                this.dataUser.avatarUrl = data.avatar_url;
+              
+                this.dataUser = data;
+                this.showUser = true;
+                this.showError = false;
+
+                this.dataUser.login = data.login || '-';
+                this.dataUser.localizacao = data.location || '-';
+                this.dataUser.biografia = data.bio || '-';
+                this.dataUser.seguidores = data.followers || '-';
+                this.dataUser.seguindo = data.following || '-';
+                this.dataUser.avatarUrl = data.avatar_url || '/src/assets/logotipo-do-github.png';
                 
                 console.log('---------------------------------');
 
@@ -85,11 +98,23 @@ export default{
                 console.log('Seguidores: ',this.dataUser.seguidores);
                 console.log('Seguindo: ',this.dataUser.seguindo);
                 console.log('---------------------------------');
+            
                 }
             })             
-            console.log('dataUser',this.dataUser.login);
-        }
+        },
+
+        closeButton(){
+        this.showError = false;
+        console.log('caiu no close pai');
+    },
+
+    cleanInput(){
+        console.log('caiu no clean');
+        this.nameUser = '';
     }
+ }
+
+   
 }
 </script>
 
@@ -138,9 +163,19 @@ li{
     margin-bottom: 10px;
 }
 
+input{
+    width: 15.5rem;
+    height: 1.5rem;
+}
+
 .bold{
     color: black;
     font-weight: bold;
+}
+
+.btn-submit{
+    margin-left: 10px;
+    height: 1.9rem;
 }
 
 </style>
