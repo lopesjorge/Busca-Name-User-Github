@@ -3,37 +3,37 @@
         <div class="card-wrapper">
             <div class="card">
                 <div class="input-user">
-                <h1>Digite seu user Github</h1>
-                <input type="text" placeholder="nome de usuário" v-model="nameUser" @keypress.enter="hiddenLoading(),getData()">
-                <button @click="hiddenLoading(),getData()" class="btn-submit">Pesquisar</button>
+                    <h1>Digite seu user Github</h1>
+
+                    <input 
+                        type="text" 
+                        placeholder="nome de usuário" 
+                        v-model="nameUser" 
+                        @keypress.enter="hiddenLoading(),getData()"
+                    >
+
+                    <button @click="hiddenLoading(),getData()" class="btn-submit">
+                        Pesquisar
+                    </button>
                 </div> 
 
                 <PageLoading
-                :showLoading="showLoading"
-                >
-                </PageLoading>
+                    :showLoading="showLoading"
+                />
 
                 <UserComplete 
-                :nameUser="dataUser.login"
-                :userLocation="dataUser.localizacao"
-                :userBio="dataUser.biografia"
-                :userFollowers="dataUser.seguindo"
-                :userFollowing="dataUser.seguidores"
-                :userAvatarUrl="dataUser.avatarUrl"
-                :showUser="showUser"
-                >
-                </UserComplete>  
-                
+                    :data="dataUser"
+                    :showUser="showUser"
+                />
             </div>
         </div>
     </div>
 
     <UserNotFound
-    @close="closeButton()"
-    :showError="showError"
-    :message="messageError" >
-    </UserNotFound>
-
+        @close="closeButton()"
+        :showError="showError"
+        :message="messageError" 
+    />
 </template>
 
 <script>
@@ -42,13 +42,14 @@ import UserNotFound from '@/components/UserNotFound.vue'
 import PageLoading from '@/components/PageLoading.vue'
 
 export default{
-name: 'HomeView',
+    name: 'HomeView',
 
-components: {
-    UserComplete,
-    UserNotFound,
-    PageLoading
-},
+    components: {
+        UserComplete,
+        UserNotFound,
+        PageLoading
+    },
+
     data(){
         return{
             nameUser:'',
@@ -57,65 +58,64 @@ components: {
             showUser:false,
             showError:false,
             showLoading:false,
-            dataUser:{
-                login:'',
-                localizacao:'',
-                biografia:'',
-                seguidores:'',
-                seguido:'',
-                avatarUrl:''
-            },
+            dataUser: Object,
         }
     },
 
     methods:{
-        getData(){
-         fetch(this.apiUrl+this.nameUser)
-            .then((response)=>{
-                return response.json()
-            }).then((data)=>{
+        // getData(){
+        //     fetch(this.apiUrl+this.nameUser)
+        //         .then((response)=>{
+        //             return response.json()
+        //         })
+        //         .then((data)=>{
+        //             if(data.message === 'Not Found'){
+        //                 this.messageError = `User ${data.message}`;
+        //                 this.showError = true;
+        //                 this.showUser = false;
+        //                 this.showLoading = false;
+                        
+        //             } else {
+    
+        //                 this.dataUser = data;
+        //                 this.showUser = true;
+        //                 this.showError = false;
+
+        //                 this.dataUser.login = data.login || '-';
+        //                 this.dataUser.localizacao = data.location || '-';
+        //                 this.dataUser.biografia = data.bio || '-';
+        //                 this.dataUser.seguidores = data.followers || '-';
+        //                 this.dataUser.seguindo = data.following || '-';
+        //                 this.dataUser.avatarUrl = data.avatar_url || '/src/assets/logotipo-do-github.png';
+
+        //                 this.showLoading = false;
+
+        //             }
+        //         })             
+        // },
+        
+        async getData(){
+            const response = await fetch(this.apiUrl + this.nameUser)
+            const data = await response.json()
+
+            try {
+                this.dataUser = data
                 
                 if(data.message === 'Not Found'){
-                    this.messageError = `User ${data.message}`;
-                    this.showError = true;
-                    this.showUser = false;
-                    this.showLoading = false;
-
-                    console.log('message:',data.message);
-                    console.log('message:',data.message);
-                    
-                } else {
- 
-                this.dataUser = data;
-                this.showUser = true;
-                this.showError = false;
-
-                this.dataUser.login = data.login || '-';
-                this.dataUser.localizacao = data.location || '-';
-                this.dataUser.biografia = data.bio || '-';
-                this.dataUser.seguidores = data.followers || '-';
-                this.dataUser.seguindo = data.following || '-';
-                this.dataUser.avatarUrl = data.avatar_url || '/src/assets/logotipo-do-github.png';
-                
-                console.log('---------------------------------');
-
-                console.log('Dados de usuário GITHUB ');
-                console.log('Name user GITHUB: ',this.dataUser.login);
-                console.log('Location: ',this.dataUser.localizacao);
-                console.log('Bio:',this.dataUser.biografia);
-                console.log('Seguidores: ',this.dataUser.seguidores);
-                console.log('Seguindo: ',this.dataUser.seguindo);
-                console.log('---------------------------------');
-
-                this.showLoading = false;
-
+                    this.showError = true
+                    this.messageError = 'Usuário não encontrado!'
                 }
-            })             
+                console.log(this.dataUser)
+
+            } catch(err) {
+                this.showError = true
+                this.messageError = err
+            }
         },
 
         closeButton(){
-        this.showError = false;
-        console.log('caiu no close pai');
+            this.showError = false;
+            console.log('caiu no close pai');
         },
 
         hiddenLoading(){
