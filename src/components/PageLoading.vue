@@ -1,23 +1,10 @@
 <template>
-    <div class="c-loader" v-if="showLoading"></div>
+    <div class="c-loader"></div>
 </template>
 
 <script>
   export default {
     name: 'PageLoading',
-
-    props:{
-        showLoading:{
-            type:Boolean,
-            default:false
-        }
-     },
-     methods:{
-        close(){
-            this.$emit('close');
-            console.log('caiu no close filho');
-        }
-     }
   }
 </script>
 

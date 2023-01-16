@@ -17,11 +17,10 @@
                     </button>
                 </div> 
 
-                <PageLoading
-                    :showLoading="showLoading"
-                />
+                <PageLoading v-if='showLoading' />
 
                 <UserComplete 
+                    v-else
                     :data="dataUser"
                     :showUser="showUser"
                 />
@@ -58,7 +57,7 @@ export default{
             showUser:false,
             showError:false,
             showLoading:false,
-            dataUser: Object,
+            dataUser: {},
         }
     },
 
@@ -95,6 +94,7 @@ export default{
         // },
         
         async getData(){
+            this.showLoading = true
             const response = await fetch(this.apiUrl + this.nameUser)
             const data = await response.json()
 
@@ -104,12 +104,15 @@ export default{
                 if(data.message === 'Not Found'){
                     this.showError = true
                     this.messageError = 'Usuário não encontrado!'
+                    return
                 }
-                console.log(this.dataUser)
+                this.showUser = true;
 
             } catch(err) {
                 this.showError = true
                 this.messageError = err
+            } finally {
+                this.showLoading = false
             }
         },
 

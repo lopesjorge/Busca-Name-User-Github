@@ -1,7 +1,7 @@
 <template>
     <div class="data-user" v-if="showUser">
         <div class="image-user">
-            <img :src="data.avatar.url" alt="user-image">
+            <img :src="data.avatar_url" alt="user-image">
         </div>
 
         <div>
@@ -33,5 +33,9 @@
             default: false        
         },
     },
+
+    mounted() {
+        console.log('data', this.data)
+    }
   }
   </script>
